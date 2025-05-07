@@ -71,7 +71,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         
         # Use Django's set_password method which properly hashes the password
         user.set_password(new_password)
-        user.save()
+        # Save the user and force update
+        user.save(force_update=True)
         
         # Print confirmation for debugging (remove in production)
         print(f"Password reset successful for user: {user.username}")

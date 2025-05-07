@@ -29,11 +29,14 @@ __pycache__/
 
 # Django
 db.sqlite3
+db.sqlite3-journal
+media
 
 # Environment
 .env
 venv/
 env/
+ENV/
 
 # VSCode
 .vscode/
@@ -41,3 +44,32 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Django Rest Framework
+.coverage
+htmlcov/
+
+# React / Node.js
+.pnp/
+.pnp.js
+
+# Build files
+/build/
+/frontend/build/
+/frontend/dist/
+dist/
+
+# IDE specific files
+.idea/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Package files
+*.egg
+*.egg-info
+
+# Local settings
+local_settings.py
