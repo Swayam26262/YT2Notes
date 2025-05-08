@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.apple.views import AppleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from django.contrib.auth.models import User
@@ -134,37 +133,4 @@ class GoogleLoginView(SocialLoginView):
         except SocialApp.DoesNotExist:
             return Response({'error': 'Google OAuth configuration not found'}, status=500)
         except Exception as e:
-            return Response({'error': str(e), 'details': str(type(e))}, status=500)
-
-class AppleLoginView(SocialLoginView):
-    adapter_class = AppleOAuth2Adapter
-    callback_url = settings.FRONTEND_URL
-    client_class = OAuth2Client
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == 200:
-            # Get or create user
-            email = request.data.get('email')
-            if not User.objects.filter(email=email).exists():
-                username = generate_username(email)
-                user = User.objects.create_user(
-                    username=username,
-                    email=email,
-                    password=User.objects.make_random_password()
-                )
-            else:
-                user = User.objects.get(email=email)
-            
-            # Generate JWT tokens
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email
-                }
-            })
-        return response 
+            return Response({'error': str(e), 'details': str(type(e))}, status=500) 

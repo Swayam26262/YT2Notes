@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.apple',
     'rest_framework.authtoken',
 ]
 
@@ -186,14 +185,6 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-        }
-    },
-    'apple': {
-        'APP': {
-            'client_id': os.getenv('APPLE_CLIENT_ID'),
-            'secret': os.getenv('APPLE_CLIENT_SECRET'),
-            'key': os.getenv('APPLE_KEY_ID'),
-            'team_id': os.getenv('APPLE_TEAM_ID'),
         }
     }
 }

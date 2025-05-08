@@ -7,6 +7,7 @@ import Home from "./pages/Home"
 import NotFound from "./pages/NotFound"
 import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
+import { ThemeProvider } from './context/ThemeContext'
 
 
 
@@ -23,18 +24,19 @@ function RegisterAndLogout(){
 function App() {
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={ <ProtectedRoute> <Home/> </ProtectedRoute>} />
-        <Route path="/login" element= { <Login /> }/>
-        <Route path="/logout" element= { <Logout /> }/>
-        <Route path="/register" element= { <RegisterAndLogout />}/>
-        <Route path="/forgot-password" element={ <ForgotPassword /> }/>
-        <Route path="/reset-password/:uid/:token" element={ <ResetPassword /> }/>
-        <Route path="*" element={ <NotFound /> }/>
-
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={ <ProtectedRoute> <Home/> </ProtectedRoute>} />
+          <Route path="/login" element= { <Login /> }/>
+          <Route path="/logout" element= { <Logout /> }/>
+          <Route path="/register" element= { <RegisterAndLogout />}/>
+          <Route path="/forgot-password" element={ <ForgotPassword /> }/>
+          <Route path="/reset-password/:uid/:token" element={ <ResetPassword /> }/>
+          <Route path="*" element={ <NotFound /> }/>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 

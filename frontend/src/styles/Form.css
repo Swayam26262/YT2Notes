@@ -243,3 +243,108 @@
 .btn:hover {
   border: 1px solid #2d79f3;
 }
+
+/* Social login buttons */
+.social-buttons-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.btn.google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  width: 80%;
+  max-width: 250px;
+  height: 50px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+}
+
+.btn.google:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f8f8f8;
+  border-color: #d0d0d0;
+}
+
+.btn.google:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn.google:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn.google svg {
+  margin-right: 12px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .auth-form-card {
+    max-width: 100%;
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .form {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .auth-form-title {
+    font-size: 1.5rem;
+  }
+
+  .inputForm {
+    height: 45px;
+  }
+
+  .button-submit {
+    height: 45px;
+  }
+
+  .btn.google {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .auth-form-container {
+    padding: 10px;
+  }
+
+  .auth-form-card {
+    padding: 1rem;
+  }
+
+  .form {
+    padding: 15px;
+  }
+
+  .flex-row {
+    flex-direction: column;
+  }
+  
+  .btn.google {
+    font-size: 14px;
+    padding: 10px 15px;
+    height: 45px;
+  }
+}
