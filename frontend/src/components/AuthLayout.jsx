@@ -6,7 +6,7 @@ const AuthLayout = ({ children }) => {
   const { theme, toggleTheme } = useTheme();
   
   return (
-    <div className="min-h-screen bg-[#13151d] text-white">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#13151d] text-white' : 'bg-gray-50 text-gray-900'}`}>
       {/* Header */}
       <header className="py-4 px-6">
         <div className="container mx-auto flex items-center justify-between">
@@ -20,7 +20,7 @@ const AuthLayout = ({ children }) => {
           
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-[#1e2130] text-yellow-300 hover:bg-[#252a3d] transition-colors"
+            className={`p-2 rounded-full ${theme === 'dark' ? 'bg-[#1e2130] text-yellow-300 hover:bg-[#252a3d]' : 'bg-gray-200 text-purple-600 hover:bg-gray-300'} transition-colors`}
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (

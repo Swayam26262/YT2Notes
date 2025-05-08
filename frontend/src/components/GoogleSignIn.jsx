@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ACCESS_TOKEN } from '../constants';
+import { useTheme } from '../context/ThemeContext';
 
 const GoogleSignIn = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     // Load the Google Sign-In script
@@ -73,7 +75,11 @@ const GoogleSignIn = () => {
 
   return (
     <button 
-      className="btn google" 
+      className={`flex items-center justify-center w-full py-2.5 px-4 border rounded-lg font-medium ${
+        theme === 'dark' 
+          ? 'border-gray-700 bg-[#252a3d] hover:bg-[#2d3349] text-white' 
+          : 'border-gray-300 bg-white hover:bg-gray-50 text-gray-800'
+      } transition-colors`}
       type="button" 
       onClick={handleGoogleSignIn} 
       disabled={isLoading}
@@ -86,7 +92,7 @@ const GoogleSignIn = () => {
             <path style={{ fill: '#28B446' }} d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z"></path>
             <path style={{ fill: '#F14336' }} d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z"></path>
           </svg>
-          Google
+          <span className="ml-2">Google</span>
         </>
       )}
     </button>

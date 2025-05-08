@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../api';
 import AuthLayout from '../components/AuthLayout';
+import { useTheme } from '../context/ThemeContext';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +54,7 @@ const Register = () => {
 
   return (
     <AuthLayout>
-      <div className="bg-[#1e2130] rounded-xl shadow-xl overflow-hidden">
+      <div className={`${theme === 'dark' ? 'bg-[#1e2130]' : 'bg-white'} rounded-xl shadow-xl overflow-hidden`}>
         {/* Header Section */}
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6">
           <h1 className="text-2xl font-bold text-white text-center">Create Account</h1>
@@ -72,7 +74,7 @@ const Register = () => {
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
+              <label htmlFor="username" className={`block text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>Username</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -86,7 +88,11 @@ const Register = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-gray-700 bg-[#252a3d] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className={`block w-full pl-10 pr-3 py-2.5 rounded-lg border ${
+                    theme === 'dark' 
+                      ? 'border-gray-700 bg-[#252a3d] text-white' 
+                      : 'border-gray-300 bg-gray-50 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="Choose a username"
                   required
                 />
@@ -94,7 +100,7 @@ const Register = () => {
             </div>
             
             <div>
-              <label htmlFor="email" className="block text-sm text-gray-300 mb-1">Email Address</label>
+              <label htmlFor="email" className={`block text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>Email Address</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -107,7 +113,11 @@ const Register = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-gray-700 bg-[#252a3d] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className={`block w-full pl-10 pr-3 py-2.5 rounded-lg border ${
+                    theme === 'dark' 
+                      ? 'border-gray-700 bg-[#252a3d] text-white' 
+                      : 'border-gray-300 bg-gray-50 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="your.email@example.com"
                   required
                 />
@@ -115,7 +125,7 @@ const Register = () => {
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm text-gray-300 mb-1">Password</label>
+              <label htmlFor="password" className={`block text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -129,7 +139,11 @@ const Register = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-700 bg-[#252a3d] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className={`block w-full pl-10 pr-10 py-2.5 rounded-lg border ${
+                    theme === 'dark' 
+                      ? 'border-gray-700 bg-[#252a3d] text-white' 
+                      : 'border-gray-300 bg-gray-50 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="Create a password"
                   required
                 />
@@ -157,7 +171,7 @@ const Register = () => {
             </div>
             
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm text-gray-300 mb-1">Confirm Password</label>
+              <label htmlFor="confirmPassword" className={`block text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>Confirm Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -171,7 +185,11 @@ const Register = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-700 bg-[#252a3d] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className={`block w-full pl-10 pr-10 py-2.5 rounded-lg border ${
+                    theme === 'dark' 
+                      ? 'border-gray-700 bg-[#252a3d] text-white' 
+                      : 'border-gray-300 bg-gray-50 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="Confirm your password"
                   required
                 />
@@ -222,7 +240,7 @@ const Register = () => {
           </form>
           
           <div className="mt-6 text-center">
-            <p className="text-gray-400">
+            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
               Already have an account?{' '}
               <Link to="/login" className="text-purple-400 hover:text-purple-300 font-medium">
                 Sign in
@@ -232,10 +250,10 @@ const Register = () => {
           
           <div className="mt-6 relative flex items-center justify-center">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
+              <div className={`w-full border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}></div>
             </div>
-            <div className="relative px-4 bg-[#1e2130]">
-              <p className="text-sm text-gray-400">Or continue with</p>
+            <div className={`relative px-4 ${theme === 'dark' ? 'bg-[#1e2130]' : 'bg-white'}`}>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Or continue with</p>
             </div>
           </div>
           
@@ -243,7 +261,11 @@ const Register = () => {
             <button 
               type="button" 
               onClick={() => window.location.href = 'http://localhost:8000/accounts/google/login/'}
-              className="flex items-center justify-center w-full py-2.5 px-4 border border-gray-700 rounded-lg bg-[#252a3d] hover:bg-[#2d3349] transition-colors text-white font-medium"
+              className={`flex items-center justify-center w-full py-2.5 px-4 border rounded-lg font-medium ${
+                theme === 'dark' 
+                  ? 'border-gray-700 bg-[#252a3d] hover:bg-[#2d3349] text-white' 
+                  : 'border-gray-300 bg-white hover:bg-gray-50 text-gray-800'
+              } transition-colors`}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
@@ -262,7 +284,6 @@ const Register = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   fill="#EA4335"
                 />
-                <path d="M1 1h22v22H1z" fill="none" />
               </svg>
               Google
             </button>

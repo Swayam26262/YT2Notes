@@ -4,6 +4,7 @@ import { login } from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import GoogleSignIn from '../components/GoogleSignIn';
 import AuthLayout from '../components/AuthLayout';
+import { useTheme } from '../context/ThemeContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +44,7 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="bg-[#1e2130] rounded-xl shadow-xl overflow-hidden">
+      <div className={`${theme === 'dark' ? 'bg-[#1e2130]' : 'bg-white'} rounded-xl shadow-xl overflow-hidden`}>
         {/* Header Section */}
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6">
           <h1 className="text-2xl font-bold text-white text-center">Welcome Back</h1>
@@ -62,7 +64,7 @@ const Login = () => {
           
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
+              <label htmlFor="username" className={`block text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>Username</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -76,7 +78,11 @@ const Login = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-gray-700 bg-[#252a3d] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className={`block w-full pl-10 pr-3 py-2.5 rounded-lg border ${
+                    theme === 'dark' 
+                      ? 'border-gray-700 bg-[#252a3d] text-white' 
+                      : 'border-gray-300 bg-gray-50 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="Enter your username"
                   required
                 />
@@ -85,7 +91,7 @@ const Login = () => {
             
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label htmlFor="password" className="block text-sm text-gray-300">Password</label>
+                <label htmlFor="password" className={`block text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Password</label>
                 <Link to="/forgot-password" className="text-xs text-purple-400 hover:text-purple-300">
                   Forgot password?
                 </Link>
@@ -103,7 +109,11 @@ const Login = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-700 bg-[#252a3d] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className={`block w-full pl-10 pr-10 py-2.5 rounded-lg border ${
+                    theme === 'dark' 
+                      ? 'border-gray-700 bg-[#252a3d] text-white' 
+                      : 'border-gray-300 bg-gray-50 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="Enter your password"
                   required
                 />
@@ -154,7 +164,7 @@ const Login = () => {
           </form>
           
           <div className="mt-6 text-center">
-            <p className="text-gray-400">
+            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
               Don't have an account?{' '}
               <Link to="/register" className="text-purple-400 hover:text-purple-300 font-medium">
                 Sign up
@@ -164,10 +174,10 @@ const Login = () => {
           
           <div className="mt-6 relative flex items-center justify-center">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
+              <div className={`w-full border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}></div>
             </div>
-            <div className="relative px-4 bg-[#1e2130]">
-              <p className="text-sm text-gray-400">Or continue with</p>
+            <div className={`relative px-4 ${theme === 'dark' ? 'bg-[#1e2130]' : 'bg-white'}`}>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Or continue with</p>
             </div>
           </div>
           
