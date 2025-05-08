@@ -5,6 +5,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import VideoNotes
 
 # Define a serializer for the User model
 class UserSerializer(serializers.ModelSerializer):
@@ -78,3 +79,15 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         print(f"Password reset successful for user: {user.username}")
         
         return user
+
+class VideoNotesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VideoNotes
+        fields = ['id', 'youtube_title', 'youtube_link', 'notes_content', 
+                 'transcription', 'audio_url', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+        
+    def create(self, validated_data):
+        request = self.context.get('request')
+        validated_data['user'] = request.user
+        return super().create(validated_data)

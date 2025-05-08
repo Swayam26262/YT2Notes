@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../api';
-import { ACCESS_TOKEN } from '../constants';
+import { storeTokens } from '../utils/tokenStorage';
 import GoogleSignIn from '../components/GoogleSignIn';
 import AuthLayout from '../components/AuthLayout';
 import { useTheme } from '../context/ThemeContext';
@@ -24,8 +24,12 @@ const Login = () => {
     
     try {
       const response = await login(formData);
+      console.log("Login response data:", response);
       if (response.access) {
-        localStorage.setItem(ACCESS_TOKEN, response.access);
+        // Store tokens in localStorage and cookies
+        const success = storeTokens(response.access, response.refresh);
+        console.log("Token storage success:", success);
+        
         navigate('/');
       }
     } catch (error) {

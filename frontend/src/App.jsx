@@ -7,6 +7,9 @@ import Home from "./pages/Home"
 import NotFound from "./pages/NotFound"
 import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
+import GenerateNotesPage from "./pages/GenerateNotesPage"
+import NotesListPage from "./pages/NotesListPage"
+import NoteDetailPage from "./pages/NoteDetailPage"
 import { ThemeProvider } from './context/ThemeContext'
 
 
@@ -33,6 +36,9 @@ function App() {
           <Route path="/register" element= { <RegisterAndLogout />}/>
           <Route path="/forgot-password" element={ <ForgotPassword /> }/>
           <Route path="/reset-password/:uid/:token" element={ <ResetPassword /> }/>
+          <Route path="/generate" element={ <Navigate to="/" replace /> } />
+          <Route path="/notes" element={ <ProtectedRoute> <NotesListPage /> </ProtectedRoute>} />
+          <Route path="/notes/:id" element={ <ProtectedRoute> <NoteDetailPage /> </ProtectedRoute>} />
           <Route path="*" element={ <NotFound /> }/>
         </Routes>
       </BrowserRouter>

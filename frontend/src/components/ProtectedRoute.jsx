@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import api from "../api";
-import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
+import { getAccessToken, getRefreshToken, storeTokens } from "../utils/tokenStorage";
 import { useState, useEffect } from "react";
 
 
@@ -13,37 +13,65 @@ function ProtectedRoute({ children }) {
     }, [])
 
     const refreshToken = async () => {
-        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+        console.log("------ Token Refresh Attempt ------");
+        // Get refresh token using tokenStorage utility
+        const refreshToken = getRefreshToken();
+        console.log("Refresh token from storage:", refreshToken ? "Token found" : "No token");
+        
+        if (!refreshToken) {
+            console.log("No refresh token found in storage");
+            setIsAuthorized(false);
+            return;
+        }
+        
         try {
+            console.log("Attempting to refresh token with refresh token");
             const res = await api.post("/api/token/refresh/", {
                 refresh: refreshToken,
             });
+            console.log("Token refresh success! New access token received");
             if (res.status === 200) {
-                localStorage.setItem(ACCESS_TOKEN, res.data.access)
+                // Store the new access token
+                storeTokens(res.data.access, refreshToken);
+                console.log("New access token stored successfully");
                 setIsAuthorized(true)
             } else {
+                console.log("Token refresh failed with status:", res.status);
                 setIsAuthorized(false)
             }
         } catch (error) {
-            console.log(error);
+            console.log("Token refresh error:", error.response?.data || error.message);
             setIsAuthorized(false);
         }
     };
 
     const auth = async () => {
-        const token = localStorage.getItem(ACCESS_TOKEN);
+        console.log("------ Auth Verification ------");
+        const token = getAccessToken();
         if (!token) {
+            console.log("No access token found, redirecting to login");
             setIsAuthorized(false);
             return;
         }
-        const decoded = jwtDecode(token);
-        const tokenExpiration = decoded.exp;
-        const now = Date.now() / 1000;
+        
+        try {
+            const decoded = jwtDecode(token);
+            const tokenExpiration = decoded.exp;
+            const now = Date.now() / 1000;
+            const timeRemaining = Math.round(tokenExpiration - now);
 
-        if (tokenExpiration < now) {
-            await refreshToken();
-        } else {
-            setIsAuthorized(true);
+            console.log(`Access token expires in ${timeRemaining} seconds`);
+
+            if (tokenExpiration < now) {
+                console.log("Access token expired, attempting refresh");
+                await refreshToken();
+            } else {
+                console.log("Access token valid, user authorized");
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.log("Error validating token:", error);
+            setIsAuthorized(false);
         }
     };
 

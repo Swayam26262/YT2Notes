@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ACCESS_TOKEN } from '../constants';
+import { storeTokens } from '../utils/tokenStorage';
 import { useTheme } from '../context/ThemeContext';
 
 const GoogleSignIn = () => {
@@ -55,7 +55,10 @@ const GoogleSignIn = () => {
             }
 
             if (data.access) {
-              localStorage.setItem(ACCESS_TOKEN, data.access);
+              // Store tokens in localStorage and cookies
+              const success = storeTokens(data.access, data.refresh);
+              console.log("Google login token storage success:", success);
+              
               navigate('/');
             } else {
               throw new Error('No access token received');

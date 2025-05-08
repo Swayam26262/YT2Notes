@@ -1,89 +1,54 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Copy, CheckCircle2 } from 'lucide-react';
-import LoadingSpinner from './LoadingSpinner';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { convertMarkdownToHtml } from '../utils/markdownConverter';
 
-const NotesDisplay = ({ notes, isLoading }) => {
-  const [copied, setCopied] = useState(false);
-  const notesRef = useRef(null);
-
-  useEffect(() => {
-    if (!isLoading && notesRef.current) {
-      notesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [isLoading, notes]);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(notes.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  if (isLoading) {
-    return <LoadingSpinner text="Generating notes..." />;
+const NotesDisplay = ({ notes }) => {
+  if (!notes) {
+    return null;
   }
 
   return (
-    <div 
-      ref={notesRef}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 animate-fadeIn"
-    >
-      <div className="relative h-48 bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center overflow-hidden">
-        {notes.thumbnailUrl ? (
-          <img 
-            src={notes.thumbnailUrl} 
-            alt={notes.videoTitle} 
-            className="w-full h-full object-cover object-center opacity-80"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-90"></div>
-        )}
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-          <h3 className="text-white text-xl md:text-2xl font-bold p-6 text-center drop-shadow-md">
-            {notes.videoTitle}
-          </h3>
+    <div className="notes-display bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div className="notes-header mb-6">
+        <h2 className="text-2xl font-bold mb-3">{notes.youtube_title}</h2>
+        <div className="notes-meta flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+          <a 
+            href={notes.youtube_link} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center gap-2 text-red-600 dark:text-red-400 hover:underline"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+            </svg>
+            View Original Video
+          </a>
+          <span>
+            Created: {new Date(notes.created_at).toLocaleDateString()}
+          </span>
         </div>
       </div>
       
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Notes</h4>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1 text-sm text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
-            aria-label="Copy notes to clipboard"
-          >
-            {copied ? (
-              <>
-                <CheckCircle2 size={16} />
-                <span>Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy size={16} />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
-        </div>
-        
-        <div className="prose dark:prose-invert prose-purple prose-sm sm:prose-base max-w-none">
-          {notes.content.split('\n').map((paragraph, idx) => (
-            <p key={idx} className="mb-4 last:mb-0 text-gray-700 dark:text-gray-300">{paragraph}</p>
-          ))}
-        </div>
-        
-        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            <a 
-              href={notes.videoUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
-            >
-              View original video →
-            </a>
-          </p>
-        </div>
+      <div className="notes-content mb-6">
+        <div dangerouslySetInnerHTML={{ 
+          __html: convertMarkdownToHtml(notes.notes_content)
+        }} />
+      </div>
+      
+      <div className="notes-actions flex gap-3 mt-8">
+        <Link 
+          to={`/notes/${notes.id}`} 
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          View Full Notes
+        </Link>
+        <button 
+          onClick={() => window.print()} 
+          className="px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        >
+          Print Notes
+        </button>
       </div>
     </div>
   );
