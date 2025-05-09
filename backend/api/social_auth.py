@@ -32,6 +32,13 @@ class GoogleLoginView(SocialLoginView):
     callback_url = "postmessage"  # This is crucial for Google One Tap / Sign-in With Google
     client_class = OAuth2Client
 
+    def get(self, request, *args, **kwargs):
+        """Handle GET requests by returning a helpful error message."""
+        return Response({
+            'error': 'This endpoint requires a POST request',
+            'message': 'Please use the Google Sign-In button on the website instead of accessing this URL directly.'
+        }, status=405)
+    
     def get_client(self, request, app):
         return self.client_class(
             request=request,

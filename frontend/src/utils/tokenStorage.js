@@ -1,6 +1,6 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
 
-// Helper to set cookies with expiration and proper security settings
+// Helper to set cookies with expiration
 function setCookie(name, value, days) {
   let expires = "";
   if (days) {
@@ -8,22 +8,7 @@ function setCookie(name, value, days) {
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
     expires = "; expires=" + date.toUTCString();
   }
-  
-  // Get the domain from the current URL
-  const domain = window.location.hostname;
-  // Only set domain for non-localhost
-  const domainStr = domain === 'localhost' ? '' : `; domain=${domain}`;
-  
-  // Check if we're on HTTPS
-  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-  
-  // Set SameSite attribute based on environment
-  const sameSite = window.location.hostname === 'localhost' ? '; SameSite=Lax' : '; SameSite=None';
-  
-  // Set the cookie with proper attributes
-  document.cookie = name + "=" + (value || "") + expires + domainStr + "; path=/" + secure + sameSite;
-  
-  console.log(`Cookie ${name} set with attributes: domain=${domain}, secure=${secure}, sameSite=${sameSite}`);
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Strict";
 }
 
 // Helper to get cookies

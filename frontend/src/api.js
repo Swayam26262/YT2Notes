@@ -1,16 +1,8 @@
 import axios from "axios"
 import { getAccessToken } from "./utils/tokenStorage"
 
-// Get the base URL from environment variable with a fallback
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-console.log('API base URL:', apiUrl);
-
 const api = axios.create({
-    baseURL: apiUrl,
-    withCredentials: true, // Important for CORS with authentication
-    headers: {
-        'Content-Type': 'application/json',
-    }
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000'
 })
 
 api.interceptors.request.use(
@@ -28,43 +20,25 @@ api.interceptors.request.use(
 
 // Create a separate instance without auth interceptors for public endpoints
 const publicApi = axios.create({
-    baseURL: apiUrl,
-    withCredentials: true, // Important for CORS with authentication
-    headers: {
-        'Content-Type': 'application/json',
-    }
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000'
 })
 
 export const login = async (credentials) => {
     try {
         console.log("Attempting login with credentials:", { ...credentials, password: "***" });
-        console.log("Using API URL:", apiUrl);
-        
-        // Add delay for testing
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
         const response = await publicApi.post('/api/token/', credentials);
-        console.log("Login response:", response);
         console.log("Login response data:", response.data);
-        console.log("Login response headers:", response.headers);
         
         // Test localStorage
         const testKey = "testLocalStorage";
-        try {
-            localStorage.setItem(testKey, "test");
-            const testValue = localStorage.getItem(testKey);
-            console.log("LocalStorage test:", testKey, "=", testValue);
-            localStorage.removeItem(testKey);
-        } catch (e) {
-            console.error("LocalStorage test failed:", e);
-        }
+        localStorage.setItem(testKey, "test");
+        const testValue = localStorage.getItem(testKey);
+        console.log("LocalStorage test:", testKey, "=", testValue);
+        localStorage.removeItem(testKey);
         
         return response.data;
     } catch (error) {
-        console.error("Login error:", error);
-        console.error("Login error response:", error.response?.data);
-        console.error("Login error status:", error.response?.status);
-        console.error("Login error headers:", error.response?.headers);
+        console.error("Login error:", error.response?.data || error.message);
         throw error;
     }
 };

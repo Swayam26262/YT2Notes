@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['yt2notes.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', '.render.com', '.herokuapp.com', os.getenv('ALLOWED_HOST', '')]
 
 # Frontend URL
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
@@ -41,34 +41,15 @@ REST_FRAMEWORK = {
      'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-     ],
+      ],
      'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-     ],
-     'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-     ],
+      ],
 }
-
 SIMPLE_JWT = {
      'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
      'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-     'ROTATE_REFRESH_TOKENS': True,
-     'BLACKLIST_AFTER_ROTATION': False,
-     'UPDATE_LAST_LOGIN': True,
-     'ALGORITHM': 'HS256',
-     'AUTH_HEADER_TYPES': ('Bearer',),
-     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-     'USER_ID_FIELD': 'id',
-     'USER_ID_CLAIM': 'user_id',
 }
-
-CSRF_TRUSTED_ORIGINS = ['https://yt2notes.onrender.com']
-
-SITE_ID = 1  # Make sure the Site object matches your deployed domain
-
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'  
 
 
 # Application definition
@@ -209,12 +190,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    'https://yt2notes.onrender.com',
     'http://localhost:5173',
     'https://localhost:5173',
 ]
 
-# Update CORS settings with proper frontend URL
+# Add FRONTEND_URL from env without trailing slash
 frontend_url = os.getenv('FRONTEND_URL', '')
 if frontend_url:
     # Remove trailing slash if present
@@ -222,38 +202,10 @@ if frontend_url:
         frontend_url = frontend_url[:-1]
     CORS_ALLOWED_ORIGINS.append(frontend_url)
 
-# Enable credentials (important for authentication cookies)
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWS_CREDENTIALS = True
 
-# Allow all headers needed for authentication
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
 
-# Allow all methods needed for API
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
 
-# Add trusted sites for CSRF protection
-CSRF_TRUSTED_ORIGINS = [
-    'https://yt2notes.onrender.com',
-]
-if frontend_url:
-    CSRF_TRUSTED_ORIGINS.append(frontend_url)
 
 # Email settings
 EMAIL_HOST = os.getenv('EMAIL_HOST')

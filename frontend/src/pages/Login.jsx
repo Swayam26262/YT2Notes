@@ -22,36 +22,8 @@ const Login = () => {
     setError('');
     setIsLoading(true);
     
-    console.log("Login form submission:", { username: formData.username, password: '***' });
-    
     try {
-      // First try the debug endpoint to check CORS
-      try {
-        console.log("Testing CORS with debug endpoint...");
-        const corsTestResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/cors-test/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ test: true })
-        });
-        
-        if (corsTestResponse.ok) {
-          console.log("CORS test successful");
-          const corsData = await corsTestResponse.json();
-          console.log("CORS test response:", corsData);
-        } else {
-          console.error("CORS test failed:", corsTestResponse.status);
-        }
-      } catch (corsError) {
-        console.error("CORS test error:", corsError);
-      }
-      
-      // Now proceed with actual login
-      console.log("Proceeding with login request...");
       const response = await login(formData);
-      
       console.log("Login response data:", response);
       if (response.access) {
         // Store tokens in localStorage and cookies
@@ -61,10 +33,7 @@ const Login = () => {
         navigate('/');
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setError(error.response?.data?.detail || 
-               error.response?.data?.non_field_errors?.[0] || 
-               'Login failed. Please check your credentials and try again.');
+      setError(error.response?.data?.detail || 'Invalid username or password.');
     } finally {
       setIsLoading(false);
     }
