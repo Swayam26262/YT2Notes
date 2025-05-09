@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from './Header';
 import { useTheme } from '../context/ThemeContext';
+import ContactForm from './ContactForm';
 
 const Layout = ({ children }) => {
   const { theme } = useTheme();
@@ -144,23 +145,14 @@ const Layout = ({ children }) => {
       <section className="py-16">
         <div className="container mx-auto px-4 max-w-5xl">
           <h2 className="text-3xl font-bold text-center mb-12">Get in Touch</h2>
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="max-w-2xl mx-auto">
             <div className="flex justify-center mb-6">
               <svg className="h-12 w-12 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </div>
-            <p className="text-xl mb-8">Have questions or suggestions? We'd love to hear from you!</p>
-            <a 
-              href="mailto:contact@yt2notes.com"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-              Contact Us
-            </a>
+            <p className="text-xl mb-8 text-center">Have questions or suggestions? We'd love to hear from you!</p>
+            <ContactForm />
           </div>
         </div>
       </section>
@@ -171,10 +163,10 @@ const Layout = ({ children }) => {
       }`}>
         <div className="container mx-auto px-4">
           <p>© {new Date().getFullYear()} YT2Notes. All rights reserved.</p>
-          <div className="mt-3 sm:mt-4 space-x-3 sm:space-x-4">
+          {/* <div className="mt-3 sm:mt-4 space-x-3 sm:space-x-4">
             <a href="#" className="hover:text-purple-600 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-purple-600 transition-colors">Terms of Service</a>
-          </div>
+          </div> */}
         </div>
       </footer>
     </div>

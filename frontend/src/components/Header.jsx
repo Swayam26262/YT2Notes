@@ -113,7 +113,7 @@ const Header = () => {
               <span>Logout</span>
             </button>
             <div className="flex justify-between items-center px-4 py-2.5">
-              <span className="text-sm">Toggle theme</span>
+              <span className="text-sm">Switch theme</span>
               <button
                 onClick={toggleTheme}
                 className={`p-2.5 rounded-full ${
