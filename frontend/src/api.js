@@ -18,11 +18,15 @@ api.interceptors.request.use(
     }
 )
 
+// Create a separate instance without auth interceptors for public endpoints
+const publicApi = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000'
+})
 
 export const login = async (credentials) => {
     try {
         console.log("Attempting login with credentials:", { ...credentials, password: "***" });
-        const response = await api.post('/api/token/', credentials);
+        const response = await publicApi.post('/api/token/', credentials);
         console.log("Login response data:", response.data);
         
         // Test localStorage
@@ -40,17 +44,18 @@ export const login = async (credentials) => {
 };
 
 export const register = async (userData) => {
-    const response = await api.post('/api/user/register/', userData);
+    // Use publicApi instead of api to bypass authentication
+    const response = await publicApi.post('/api/user/register/', userData);
     return response.data;
 };
 
 export const passwordReset = async (email) => {
-    const response = await api.post('/api/password-reset/', { email });
+    const response = await publicApi.post('/api/password-reset/', { email });
     return response.data;
 };
 
 export const resetPasswordConfirm = async (uid, token, new_password) => {
-    const response = await api.post('/api/password-reset-confirm/', {
+    const response = await publicApi.post('/api/password-reset-confirm/', {
         uid: uid,
         token: token,
         new_password: new_password

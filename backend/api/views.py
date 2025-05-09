@@ -19,7 +19,7 @@ def sample():
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = {AllowAny}
+    permission_classes = [AllowAny]
 
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]

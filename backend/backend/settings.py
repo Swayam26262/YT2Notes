@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 # Load environment variables
 load_dotenv()
@@ -31,7 +32,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', '.render.com', '.herokuapp.com', os.getenv('ALLOWED_HOST', '')]
 
 # Frontend URL
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
@@ -73,6 +74,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add whitenoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,12 +109,37 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Neon PostgreSQL database
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://neondb_owner:npg_QbFpzOZDy96X@ep-weathered-hill-a4cwk6mg-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require')
+
+if DATABASE_URL:
+    # Parse the connection string
+    parsed_url = urlparse(DATABASE_URL)
+    
+    # Extract the database name from the path
+    db_name = parsed_url.path.lstrip('/')
+    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_name,
+            'USER': parsed_url.username,
+            'PASSWORD': parsed_url.password,
+            'HOST': parsed_url.hostname,
+            'PORT': parsed_url.port or '5432',
+            'OPTIONS': {
+                'sslmode': 'require',
+            }
+        }
     }
-}
+else:
+    # Fallback to SQLite (should not happen with the default value above)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -150,6 +177,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (Uploads)
 MEDIA_URL = '/media/'
@@ -160,7 +189,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'https://localhost:5173',
+    os.getenv('FRONTEND_URL', '')
+]
 CORS_ALLOWS_CREDENTIALS = True
 
 # Email backend for development
