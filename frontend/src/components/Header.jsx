@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
+import { clearTokens } from '../utils/tokenStorage';
 
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
@@ -9,8 +10,11 @@ const Header = () => {
   
   const handleLogout = () => {
     console.log('Logout clicked');
-    // Add actual logout logic here
-    navigate('/logout'); // ✅ Programmatic redirect
+    // Clear all tokens from both localStorage and cookies
+    clearTokens();
+    console.log('All tokens cleared');
+    // Redirect to logout page which will handle the final redirect to login
+    navigate('/logout');
   };
 
   return (

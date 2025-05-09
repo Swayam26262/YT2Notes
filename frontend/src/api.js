@@ -50,17 +50,37 @@ export const register = async (userData) => {
 };
 
 export const passwordReset = async (email) => {
-    const response = await publicApi.post('/api/password-reset/', { email });
-    return response.data;
+    try {
+        console.log('Attempting password reset for email:', email);
+        const response = await publicApi.post('/api/password-reset/', { email });
+        console.log('Password reset response:', response.status);
+        return response.data;
+    } catch (error) {
+        console.error('Password reset error:', error.message);
+        if (error.message.includes('Network Error') || !error.response) {
+            console.error('Connection error detected. Server might be down.');
+        }
+        throw error;
+    }
 };
 
 export const resetPasswordConfirm = async (uid, token, new_password) => {
-    const response = await publicApi.post('/api/password-reset-confirm/', {
-        uid: uid,
-        token: token,
-        new_password: new_password
-    });
-    return response.data;
+    try {
+        console.log('Attempting to confirm password reset');
+        const response = await publicApi.post('/api/password-reset-confirm/', {
+            uid: uid,
+            token: token,
+            new_password: new_password
+        });
+        console.log('Password reset confirm response:', response.status);
+        return response.data;
+    } catch (error) {
+        console.error('Password reset confirm error:', error.message);
+        if (error.message.includes('Network Error') || !error.response) {
+            console.error('Connection error detected. Server might be down.');
+        }
+        throw error;
+    }
 };
 
 export const generateNotes = async (youtubeLink) => {

@@ -13,7 +13,7 @@ const Logout = () => {
       clearTokens();
       console.log("All tokens cleared");
       
-      // Redirect to login page
+      // Redirect to login page (not /logout which would cause a circular redirect)
       navigate('/login');
     };
 

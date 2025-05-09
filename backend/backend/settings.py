@@ -110,7 +110,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # Neon PostgreSQL database
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://neondb_owner:npg_QbFpzOZDy96X@ep-weathered-hill-a4cwk6mg-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 if DATABASE_URL:
     # Parse the connection string
@@ -192,13 +192,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'https://localhost:5173',
-    os.getenv('FRONTEND_URL', '')
 ]
+
+# Add FRONTEND_URL from env without trailing slash
+frontend_url = os.getenv('FRONTEND_URL', '')
+if frontend_url:
+    # Remove trailing slash if present
+    if frontend_url.endswith('/'):
+        frontend_url = frontend_url[:-1]
+    CORS_ALLOWED_ORIGINS.append(frontend_url)
+
 CORS_ALLOWS_CREDENTIALS = True
 
-# Email backend for development
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yt2notes.com')
+
+
+
+# Email settings
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_TIMEOUT = 30
+DEBUG_EMAIL = True
 
 # Social Authentication Settings
 AUTHENTICATION_BACKENDS = [

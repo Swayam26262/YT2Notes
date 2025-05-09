@@ -11,11 +11,14 @@ import GenerateNotesPage from "./pages/GenerateNotesPage"
 import NotesListPage from "./pages/NotesListPage"
 import NoteDetailPage from "./pages/NoteDetailPage"
 import { ThemeProvider } from './context/ThemeContext'
+import { clearTokens } from './utils/tokenStorage'
 
 
 
 function Logout(){
-  localStorage.clear()
+  // Clear tokens and localStorage
+  clearTokens();
+  localStorage.clear();
   return <Navigate to= "/login" />
 }
 
