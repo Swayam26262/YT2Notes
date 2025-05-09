@@ -15,4 +15,5 @@ cloudinary>=1.36.0
 yt-dlp>=2023.11.16
 psycopg2-binary>=2.9.9
 gunicorn>=21.2.0
-whitenoise>=6.5.0 
+whitenoise>=6.5.0
+cryptography>=42.0.0 
