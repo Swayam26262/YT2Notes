@@ -12,22 +12,56 @@ const NotesListPage = () => {
   const { theme } = useTheme();
 
   useEffect(() => {
+    const fetchNotes = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // First try to hit the ping endpoint
+        try {
+          console.log("Testing basic connectivity with ping...");
+          const pingResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/ping/`);
+          console.log("Ping response status:", pingResponse.status);
+        } catch (pingError) {
+          console.error("Ping test failed:", pingError);
+        }
+        
+        // Then try the auth test endpoint
+        try {
+          console.log("Testing authentication...");
+          const token = getAccessToken();
+          if (token) {
+            const authResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth-test/`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            console.log("Auth test response status:", authResponse.status);
+            
+            if (authResponse.ok) {
+              const authData = await authResponse.json();
+              console.log("Auth test response:", authData);
+            }
+          } else {
+            console.warn("No token available for auth test");
+          }
+        } catch (authError) {
+          console.error("Auth test failed:", authError);
+        }
+        
+        // Now proceed with actual notes fetch
+        console.log("Fetching notes...");
+        const notes = await getUserNotes();
+        setNotes(notes);
+      } catch (err) {
+        console.error("Error fetching notes:", err);
+        setError("Failed to load notes. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchNotes();
   }, []);
-
-  const fetchNotes = async () => {
-    try {
-      setLoading(true);
-      const data = await getUserNotes();
-      setNotes(data);
-      setError('');
-    } catch (err) {
-      console.error('Error fetching notes:', err);
-      setError('Failed to load your notes. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDeleteNote = async (id) => {
     if (window.confirm('Are you sure you want to delete this note?')) {
