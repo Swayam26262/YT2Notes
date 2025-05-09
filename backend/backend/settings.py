@@ -110,7 +110,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # Neon PostgreSQL database
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://neondb_owner:npg_QbFpzOZDy96X@ep-weathered-hill-a4cwk6mg-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 if DATABASE_URL:
     # Parse the connection string
