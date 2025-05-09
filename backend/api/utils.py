@@ -7,11 +7,24 @@ from django.conf import settings
 import cloudinary
 import cloudinary.uploader
 import assemblyai as aai
-from google import genai
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# Try different import methods for Google Generative AI
+try:
+    import google.generativeai as genai
+    genai_client = genai.configure(api_key=os.getenv("GOOGLE_GEMINI_API_KEY"))
+except ImportError:
+    try:
+        # Alternative import method
+        from google.generativeai import genai
+        genai_client = genai.configure(api_key=os.getenv("GOOGLE_GEMINI_API_KEY"))
+    except ImportError:
+        print("WARNING: Google Generative AI import failed. Note generation will not work.")
+        genai = None
+        genai_client = None
 
 # Configure Cloudinary
 cloudinary.config(
@@ -23,9 +36,6 @@ cloudinary.config(
 
 # Configure AssemblyAI
 aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
-
-# Configure Google Gemini
-genai_client = genai.Client(api_key=os.getenv("GOOGLE_GEMINI_API_KEY"))
 
 def yt_title(link):
     """Fetch the YouTube video title."""
@@ -119,6 +129,9 @@ def get_transcription_from_audio(audio_url):
 def generate_notes_from_transcript(transcript, title):
     """Generate notes from transcript using Google Gemini."""
     try:
+        if genai is None:
+            return "Note generation is currently unavailable. Please check the Google Generative AI configuration."
+            
         # Create prompt for Gemini
         prompt = f"""You are an expert note-taker. Create comprehensive, organized notes from the following transcript of a YouTube video titled: "{title}".
         
@@ -133,25 +146,27 @@ Transcript:
 {transcript}
 """
         
-        # Try with gemini-1.5-flash first, then fall back to gemini-pro if needed
+        # Try with different Gemini models
         try:
-            response = genai_client.models.generate_content(
-                model="gemini-1.5-flash",
-                contents=prompt
-            )
-        except Exception as e:
-            print(f"Error with gemini-1.5-flash model: {str(e)}")
-            print("Trying with gemini-pro model...")
-            response = genai_client.models.generate_content(
-                model="gemini-pro",
-                contents=prompt
-            )
-        
-        # Return the generated notes
-        return response.text
+            # For newer genai library
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(prompt)
+            return response.text
+        except (AttributeError, NameError, TypeError):
+            try:
+                # For older genai library
+                response = genai.generate_text(
+                    model="gemini-pro",
+                    prompt=prompt
+                )
+                return response.text
+            except Exception as e:
+                print(f"Error with alternative model: {str(e)}")
+                return "Note generation failed. Please try again later."
+                
     except Exception as e:
         print(f"Error in generate_notes_from_transcript: {str(e)}")
-        raise
+        return "Note generation failed. Please try again later."
 
 def process_youtube_link(link):
     """Process YouTube link to get transcription and notes."""
@@ -175,5 +190,12 @@ def process_youtube_link(link):
             'notes': notes
         }
     except Exception as e:
-        print(f"Error in process_youtube_link: {str(e)}")
-        raise 
+        error_message = f"Error in process_youtube_link: {str(e)}"
+        print(error_message)
+        return {
+            'title': 'Error processing video',
+            'audio_url': '',
+            'transcription': 'Transcription failed. Please try again.',
+            'notes': error_message,
+            'error': True
+        } 
