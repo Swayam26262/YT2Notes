@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'rest_framework.authtoken',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -268,7 +270,7 @@ SOCIALACCOUNT_PROVIDERS = {
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Changed from 'mandatory' to 'none' temporarily
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
@@ -278,3 +280,19 @@ CSRF_TRUSTED_ORIGINS = [
     'https://yt2notes.onrender.com',
     'https://yt2notes-backend.onrender.com'
 ]
+
+ACCOUNT_SIGNUP_FIELDS = {
+    'username': {'required': True},
+    'email': {'required': True}
+}
+
+# Add these settings after ACCOUNT_SIGNUP_FIELDS
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'refresh-auth',
+    'REGISTER_SERIALIZER': 'dj_rest_auth.registration.serializers.RegisterSerializer',
+}
+
+# Update ACCOUNT_EMAIL_VERIFICATION to 'none' for testing
+ACCOUNT_EMAIL_VERIFICATION = 'none'

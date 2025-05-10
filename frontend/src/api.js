@@ -51,9 +51,20 @@ export const login = async (credentials) => {
 };
 
 export const register = async (userData) => {
-    // Use publicApi instead of api to bypass authentication
-    const response = await publicApi.post('/api/user/register/', userData);
-    return response.data;
+    try {
+        console.log("Attempting registration with data:", { ...userData, password: "***" });
+        // Use publicApi instead of api to bypass authentication
+        const response = await publicApi.post('/dj-rest-auth/registration/', userData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log("Registration response:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Registration error:", error.response?.data || error.message);
+        throw error;
+    }
 };
 
 export const passwordReset = async (email) => {

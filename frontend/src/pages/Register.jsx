@@ -35,12 +35,31 @@ const Register = () => {
       // We exclude confirmPassword field since the API doesn't need it
       const { confirmPassword, ...apiData } = formData;
       const response = await register(apiData);
-      if (response) {
+      
+      // Check if we got a key in the response (dj-rest-auth sends a key)
+      if (response.key) {
+        // Registration successful
         navigate('/login');
+      } else {
+        setError('Registration successful but unexpected response format');
       }
     } catch (error) {
       console.error('Registration failed:', error);
-      setError(error.response?.data?.detail || 'Registration failed. Please try again.');
+      // Handle different types of error responses
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        if (typeof errorData === 'object') {
+          // Handle field-specific errors
+          const errorMessages = Object.entries(errorData)
+            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+            .join('\n');
+          setError(errorMessages);
+        } else {
+          setError(errorData);
+        }
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
