@@ -192,6 +192,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'https://localhost:5173',
+    'https://yt2notes.onrender.com',
 ]
 
 # Add FRONTEND_URL from env without trailing slash
