@@ -268,7 +268,13 @@ SOCIALACCOUNT_PROVIDERS = {
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Changed from 'mandatory' to 'none' temporarily
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+
+# Add CSRF trusted origins for cross-domain requests
+CSRF_TRUSTED_ORIGINS = [
+    'https://yt2notes.onrender.com',
+    'https://yt2notes-backend.onrender.com'
+]

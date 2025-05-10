@@ -39,6 +39,19 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+    
+    def create(self, request, *args, **kwargs):
+        print("Registration attempt with data:", {
+            k: v if k != 'password' else '***' for k, v in request.data.items()
+        })
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            print("❌ Registration error:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        print("✅ User registration successful:", serializer.data.get('username', 'unknown'))
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
