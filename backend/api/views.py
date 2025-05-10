@@ -11,6 +11,25 @@ import json
 from urllib.parse import unquote
 from .models import VideoNotes
 from .utils import process_youtube_link
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+# Custom Token view to ensure proper request handling
+class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            # Debug the request data
+            print("Token Request Data:", request.data)
+            print("Content-Type:", request.META.get('CONTENT_TYPE', 'No content type provided'))
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            # Add better error handling
+            print(f"Authentication Error: {str(e)}")
+            return Response(
+                {"detail": f"Authentication failed: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 # Create your views here.
 def sample():

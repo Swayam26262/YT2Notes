@@ -23,8 +23,15 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      const response = await login(formData);
+      // Make sure to use the exact field names expected by Django REST framework
+      const loginData = {
+        username: formData.username,
+        password: formData.password
+      };
+      
+      const response = await login(loginData);
       console.log("Login response data:", response);
+      
       if (response.access) {
         // Store tokens in localStorage and cookies
         const success = storeTokens(response.access, response.refresh);
@@ -33,6 +40,7 @@ const Login = () => {
         navigate('/');
       }
     } catch (error) {
+      console.error("Login error details:", error);
       setError(error.response?.data?.detail || 'Invalid username or password.');
     } finally {
       setIsLoading(false);

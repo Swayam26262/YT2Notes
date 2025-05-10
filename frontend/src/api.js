@@ -26,7 +26,14 @@ const publicApi = axios.create({
 export const login = async (credentials) => {
     try {
         console.log("Attempting login with credentials:", { ...credentials, password: "***" });
-        const response = await publicApi.post('/api/token/', credentials);
+        
+        // Create proper form data and explicitly set Content-Type
+        const response = await publicApi.post('/api/token/', credentials, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
         console.log("Login response data:", response.data);
         
         // Test localStorage
