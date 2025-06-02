@@ -32,6 +32,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+# Enable this temporarily to debug production issues
+# DEBUG = True
+
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', '.render.com', '.herokuapp.com', os.getenv('ALLOWED_HOST', '')]
 
 # Frontend URL
@@ -41,10 +44,12 @@ REST_FRAMEWORK = {
      'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
       ],
      'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
       ],
+     'EXCEPTION_HANDLER': 'api.utils.custom_exception_handler',
 }
 SIMPLE_JWT = {
      'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
@@ -296,6 +301,11 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'auth',
     'JWT_AUTH_REFRESH_COOKIE': 'refresh-auth',
     'REGISTER_SERIALIZER': 'dj_rest_auth.registration.serializers.RegisterSerializer',
+    'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
+    'TOKEN_MODEL': None,
+    'JWT_AUTH_HTTPONLY': False,
+    'JWT_AUTH_SECURE': False,
+    'JWT_AUTH_SAMESITE': None,
 }
 
 # Update ACCOUNT_EMAIL_VERIFICATION to 'none' for testing

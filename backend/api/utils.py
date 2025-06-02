@@ -8,6 +8,12 @@ import cloudinary
 import cloudinary.uploader
 import assemblyai as aai
 from dotenv import load_dotenv
+from rest_framework.views import exception_handler
+from rest_framework.response import Response
+from rest_framework import status
+import logging
+
+logger = logging.getLogger('django')
 
 # Load environment variables
 load_dotenv()
@@ -36,6 +42,33 @@ cloudinary.config(
 
 # Configure AssemblyAI
 aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
+
+# Custom exception handler for REST framework
+def custom_exception_handler(exc, context):
+    """Custom exception handler to ensure proper JSON responses for authentication errors."""
+    # Call REST framework's default exception handler first to get the standard error response
+    response = exception_handler(exc, context)
+    
+    # Log the exception details
+    logger.error(f"Exception in {context['view'].__class__.__name__}: {str(exc)}")
+    logger.error(f"Request method: {context['request'].method}, path: {context['request'].path}")
+    
+    # If this is a 400 error from dj-rest-auth or authentication
+    if response is not None and response.status_code == 400:
+        if 'login' in context['request'].path.lower() or 'token' in context['request'].path.lower():
+            logger.info(f"Authentication error response data: {response.data}")
+            
+            # Ensure we're returning JSON, not HTML
+            if isinstance(response.data, str) and '<!doctype html>' in response.data.lower():
+                # This is an HTML response, convert to proper JSON
+                return Response(
+                    {'error': 'Authentication failed', 'detail': 'Invalid credentials'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                    content_type='application/json'
+                )
+    
+    # For all other cases, return the original response
+    return response
 
 def yt_title(link):
     """Fetch the YouTube video title."""
