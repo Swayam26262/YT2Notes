@@ -2,7 +2,7 @@ import axios from "axios"
 import { getAccessToken } from "./utils/tokenStorage"
 
 // Determine the API base URL based on environment
-const getApiBaseUrl = () => {
+export const getApiBaseUrl = () => {
     // If VITE_API_URL is set, use it
     if (import.meta.env.VITE_API_URL) {
         return import.meta.env.VITE_API_URL;
@@ -41,60 +41,85 @@ const publicApi = axios.create({
 
 export const login = async (credentials) => {
     try {
+        // Try dj-rest-auth login endpoint first
         console.log("Attempting login with credentials:", { ...credentials, password: "***" });
         console.log("Using baseURL:", publicApi.defaults.baseURL);
-        
-        // First try to use dj-rest-auth login endpoint
         console.log("Sending login request to:", `${publicApi.defaults.baseURL}/dj-rest-auth/login/`);
         
+        // Check if the endpoint exists first with a HEAD request
         try {
-            // Try dj-rest-auth login endpoint first
-            const response = await publicApi.post('/dj-rest-auth/login/', credentials, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            });
-            
-            console.log("dj-rest-auth login response data:", response.data);
-            
-            // If we get a key from dj-rest-auth, we need to get JWT tokens
-            if (response.data.key && !response.data.access) {
-                console.log("Got dj-rest-auth key, fetching JWT tokens");
-                const tokenResponse = await publicApi.post('/api/token/', credentials, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                });
-                console.log("JWT token response:", tokenResponse.data);
-                return tokenResponse.data;
+            await publicApi.head('/dj-rest-auth/login/');
+            console.log("dj-rest-auth/login/ endpoint exists");
+        } catch (headError) {
+            console.warn("dj-rest-auth/login/ endpoint check failed:", headError.message);
+            console.log("Status code:", headError.response?.status);
+        }
+        
+        const response = await publicApi.post('/dj-rest-auth/login/', credentials, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        
+        console.log("dj-rest-auth login successful, response:", response.data);
+        
+        // If we get a key but no access token, try to get JWT token
+        if (response.data.key && !response.data.access) {
+            console.log("Got dj-rest-auth key, fetching JWT token");
+            const tokenResponse = await publicApi.post('/api/token/', credentials);
+            return tokenResponse.data;
+        }
+        
+        return response.data;
+    } catch (error) {
+        // Log detailed information about the error
+        console.error("dj-rest-auth login failed:", {
+            message: error.message,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            headers: error.response?.headers
+        });
+        
+        // If dj-rest-auth login fails, try JWT token endpoint
+        console.log("Trying JWT token endpoint as fallback");
+        
+        try {
+            // Check if the endpoint exists first
+            try {
+                await publicApi.head('/api/token/');
+                console.log("/api/token/ endpoint exists");
+            } catch (headError) {
+                console.warn("/api/token/ endpoint check failed:", headError.message);
+                console.log("Status code:", headError.response?.status);
             }
             
-            return response.data;
-        } catch (authError) {
-            console.log("dj-rest-auth login failed, trying JWT endpoint", authError);
-            
-            // Fallback to direct JWT token endpoint
             const tokenResponse = await publicApi.post('/api/token/', credentials, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 }
             });
-            
-            console.log("JWT token response:", tokenResponse.data);
+            console.log("JWT token login successful");
             return tokenResponse.data;
+        } catch (tokenError) {
+            console.error("All login attempts failed. Details:", {
+                message: tokenError.message,
+                status: tokenError.response?.status,
+                statusText: tokenError.response?.statusText,
+                data: tokenError.response?.data,
+                headers: tokenError.response?.headers
+            });
+            
+            // Try to parse the error response if it's HTML
+            if (typeof tokenError.response?.data === 'string' && 
+                tokenError.response.data.includes('<!doctype html>')) {
+                console.error("Received HTML error response instead of JSON. This suggests a server configuration issue.");
+            }
+            
+            throw tokenError;
         }
-    } catch (error) {
-        console.error("Login error:", error.response?.data || error.message);
-        console.error("Full error object:", error);
-        if (error.response) {
-            console.error("Error response status:", error.response.status);
-            console.error("Error response headers:", error.response.headers);
-            console.error("Error response data:", error.response.data);
-        }
-        throw error;
     }
 };
 

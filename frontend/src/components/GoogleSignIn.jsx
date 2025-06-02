@@ -33,9 +33,11 @@ const GoogleSignIn = () => {
       callback: async (response) => {
         if (response.code) {
           try {
-            // Use API_BASE_URL from environment variables or default to relative URL
-            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-            const res = await fetch(`${API_BASE_URL}/api/auth/google/`, {
+            // Use the getApiBaseUrl function from api.js to ensure consistent URL handling
+            const apiBaseUrl = await import('../api').then(module => module.getApiBaseUrl());
+            console.log("Using API base URL for Google sign-in:", apiBaseUrl);
+            
+            const res = await fetch(`${apiBaseUrl}/api/auth/google/`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
