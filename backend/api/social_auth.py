@@ -12,6 +12,7 @@ import random
 import string
 import requests
 import json
+import logging
 
 User = get_user_model()
 
@@ -60,20 +61,30 @@ class GoogleLoginView(SocialLoginView):
             resp.raise_for_status()
 
     def post(self, request, *args, **kwargs):
+        logger = logging.getLogger('django')
+        logger.info(f"Google login request received with data: {request.data}")
+        
         try:
             # Get the authorization code from the request
             code = request.data.get('code')
             if not code:
+                logger.error("No authorization code provided in request")
                 return Response({'error': 'Authorization code is required'}, status=400)
+            
+            logger.info(f"Processing Google auth code (first 10 chars): {code[:10]}...")
 
             # Get the Google OAuth2 adapter
             adapter = self.adapter_class(request)
+            logger.info(f"Using adapter: {adapter.__class__.__name__}")
             
             # Get the social app configuration
             from allauth.socialaccount.models import SocialApp
             try:
                 app = SocialApp.objects.get(provider='google')
+                logger.info(f"Found Google SocialApp: {app.name} (ID: {app.id})")
+                logger.info(f"Using client_id: {app.client_id[:5]}...")
             except SocialApp.DoesNotExist:
+                logger.error("Google SocialApp configuration not found in database")
                 return Response({
                     'error': 'Google OAuth configuration not found. Please run the setup_oauth.bat script.',
                     'details': 'The Google OAuth app is not configured in the database.'
@@ -81,38 +92,58 @@ class GoogleLoginView(SocialLoginView):
             
             try:
                 # Exchange the code for tokens
+                logger.info("Attempting to exchange authorization code for token")
                 client = self.get_client(request, app)
+                logger.info(f"Created OAuth client: {client.__class__.__name__}")
+                logger.info(f"Callback URL: {self.callback_url}")
+                
                 token_data = client.get_access_token(code)
+                logger.info(f"Received token data type: {type(token_data).__name__}")
                 
                 if isinstance(token_data, str):
                     # Some versions return just the token as a string
                     access_token = token_data
+                    logger.info("Token received as string")
                 else:
                     # Others return a dictionary with access_token key
+                    logger.info(f"Token data keys: {token_data.keys() if hasattr(token_data, 'keys') else 'No keys'}")
                     access_token = token_data.get('access_token')
                 
                 if not access_token:
+                    logger.error("No access token in response from Google")
                     return Response({
                         'error': 'Failed to obtain access token from Google',
-                        'details': 'No access token in response'
+                        'details': 'No access token in response',
+                        'token_data': str(token_data)
                     }, status=400)
+                    
+                logger.info(f"Successfully obtained access token (first 5 chars): {access_token[:5]}...")
             except Exception as e:
+                logger.exception(f"Exception during token exchange: {str(e)}")
                 return Response({
                     'error': 'Failed to exchange authorization code for token',
-                    'details': str(e)
+                    'details': str(e),
+                    'exception_type': str(type(e).__name__)
                 }, status=400)
             
             try:
                 # Get user info directly from Google API
+                logger.info("Fetching user info from Google API")
                 user_info = self.get_google_user_info(access_token)
-                email = user_info.get('email')
+                logger.info(f"User info received: {user_info.keys() if hasattr(user_info, 'keys') else 'No user info'}")
                 
+                email = user_info.get('email')
                 if not email:
+                    logger.error("No email provided in Google user info")
                     return Response({'error': 'Email not provided by Google'}, status=400)
+                    
+                logger.info(f"User email: {email}")
             except Exception as e:
+                logger.exception(f"Exception fetching user info: {str(e)}")
                 return Response({
                     'error': 'Failed to get user info from Google',
-                    'details': str(e)
+                    'details': str(e),
+                    'exception_type': str(type(e).__name__)
                 }, status=400)
 
             # Get or create user
