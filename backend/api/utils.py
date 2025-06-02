@@ -89,12 +89,22 @@ def download_audio(link):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             print("Starting download...")
             info = ydl.extract_info(link, download=True)
+            
+            # Check video duration
+            duration = info.get('duration', 0)
+            if duration > 3600:  # More than 1 hour
+                raise Exception("Video too long. Please use a video under 1 hour in length.")
+            
             temp_file_path = os.path.join(temp_dir, f"{info['id']}.mp3")
             
             if not os.path.exists(temp_file_path):
                 raise Exception(f"Audio file not found at {temp_file_path}")
             
+            print(f"Audio file downloaded successfully: {temp_file_path}")
+            print(f"File size: {os.path.getsize(temp_file_path) / (1024*1024):.2f} MB")
+            
             # Upload to Cloudinary
+            print("Uploading to Cloudinary...")
             result = cloudinary.uploader.upload(
                 temp_file_path, 
                 resource_type="auto",
@@ -103,6 +113,7 @@ def download_audio(link):
             
             # Clean up the temporary file
             os.remove(temp_file_path)
+            print("Temporary file cleaned up")
             
             # Return the Cloudinary URL
             return result['url']
@@ -171,17 +182,27 @@ Transcript:
 def process_youtube_link(link):
     """Process YouTube link to get transcription and notes."""
     try:
+        print("Starting YouTube link processing...")
+        
         # Get title
+        print("Fetching video title...")
         title = yt_title(link)
+        print(f"Video title: {title}")
         
         # Download audio
+        print("Downloading audio...")
         audio_url = download_audio(link)
+        print("Audio download complete")
         
         # Get transcription
+        print("Getting transcription...")
         transcription = get_transcription_from_audio(audio_url)
+        print("Transcription complete")
         
         # Generate notes
+        print("Generating notes...")
         notes = generate_notes_from_transcript(transcription, title)
+        print("Notes generation complete")
         
         return {
             'title': title,

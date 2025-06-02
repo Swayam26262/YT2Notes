@@ -195,6 +195,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'https://localhost:5173',
     'https://yt2notes.onrender.com',
+    'https://yt2notes-backend.onrender.com',
 ]
 
 # Add FRONTEND_URL from env without trailing slash
@@ -225,6 +226,9 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'access-control-allow-origin',
+    'access-control-allow-headers',
+    'access-control-allow-methods',
 ]
 
 # Set to True to allow preflight requests to be cached for longer

@@ -5,6 +5,7 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
   const [youtubeLink, setYoutubeLink] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [progress, setProgress] = useState('');
 
   const isValidYouTubeURL = (url) => {
     // Basic YouTube URL validation
@@ -17,6 +18,7 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
     }
     
     setError('');
+    setProgress('');
 
     if (!youtubeLink.trim()) {
       setError('Please enter a YouTube link');
@@ -29,6 +31,7 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
     }
 
     setIsSubmitting(true);
+    setProgress('Initializing...');
     
     // Get auth token
     const token = getAccessToken();
@@ -42,6 +45,7 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
       // Properly accessing Vite environment variables
       const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       
+      setProgress('Downloading video...');
       const response = await fetch(`${baseUrl}/api/notes/generate/`, {
         method: 'POST',
         headers: {
@@ -66,6 +70,7 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
         throw new Error(errorMessage);
       }
       
+      setProgress('Processing video...');
       const result = await response.json();
       
       setYoutubeLink('');
@@ -78,6 +83,7 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
       }
     } finally {
       setIsSubmitting(false);
+      setProgress('');
     }
   };
 
@@ -105,10 +111,11 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
             {isSubmitting ? 'Processing...' : 'Generate Notes'}
           </button>
         </div>
-        {error && <p className="mt-2 text-red-600 font-medium">{error}</p>}
+        {error && <p className="mt-2 text-red-600 font-medium whitespace-pre-line">{error}</p>}
         {isSubmitting && (
           <div className="mt-4 text-center">
-            <p className="text-gray-600">This may take a few minutes depending on the video length.</p>
+            <p className="text-gray-600 mb-2">{progress}</p>
+            <p className="text-gray-600 mb-3">This may take several minutes depending on the video length.</p>
             <div className="mt-3 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
           </div>
         )}

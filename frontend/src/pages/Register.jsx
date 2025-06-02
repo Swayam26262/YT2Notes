@@ -36,12 +36,18 @@ const Register = () => {
       const { confirmPassword, ...apiData } = formData;
       const response = await register(apiData);
       
-      // Check if we got a key in the response (dj-rest-auth sends a key)
-      if (response.key) {
-        // Registration successful
+      // Handle different possible successful response formats
+      // dj-rest-auth might return different formats in different versions
+      console.log('Registration response:', response);
+      
+      if (response.key || response.detail === 'Verification e-mail sent.' || 
+          response.user || response.token || response.access) {
+        // Any of these indicate successful registration
         navigate('/login');
       } else {
-        setError('Registration successful but unexpected response format');
+        // If we get here, registration was technically successful but in an unexpected format
+        console.log('Unexpected but successful registration format:', response);
+        navigate('/login');
       }
     } catch (error) {
       console.error('Registration failed:', error);
