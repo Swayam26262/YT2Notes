@@ -26,58 +26,98 @@ const GoogleSignIn = () => {
     setError('');
     setIsLoading(true);
     
-    const client = window.google.accounts.oauth2.initCodeClient({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      scope: 'email profile',
-      ux_mode: 'popup',
-      callback: async (response) => {
-        if (response.code) {
-          try {
-            // Use the getApiBaseUrl function from api.js to ensure consistent URL handling
-            const apiBaseUrl = await import('../api').then(module => module.getApiBaseUrl());
-            console.log("Using API base URL for Google sign-in:", apiBaseUrl);
-            
-            const res = await fetch(`${apiBaseUrl}/api/auth/google/`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ code: response.code }),
-            });
+    // Check if Google client is loaded
+    if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+      console.error('Google client library not loaded');
+      setError('Google Sign-In is not available. Please try again later.');
+      setIsLoading(false);
+      return;
+    }
     
-            let errorData;
-            let data;
-            
+    try {
+      const client = window.google.accounts.oauth2.initCodeClient({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        scope: 'email profile',
+        ux_mode: 'popup',
+        callback: async (response) => {
+          if (response.code) {
             try {
-              data = await res.json();
-            } catch (err) {
-              throw new Error('Invalid response from server');
-            }
-            
-            if (!res.ok) {
-              throw new Error(data.error || data.details || 'Failed to authenticate with Google');
-            }
-
-            if (data.access) {
-              // Store tokens in localStorage and cookies
-              const success = storeTokens(data.access, data.refresh);
-              console.log("Google login token storage success:", success);
+              // Use the getApiBaseUrl function from api.js to ensure consistent URL handling
+              const apiBaseUrl = await import('../api').then(module => module.getApiBaseUrl());
+              console.log("Using API base URL for Google sign-in:", apiBaseUrl);
+              console.log("Authorization code received (first 10 chars):", response.code.substring(0, 10) + '...');
               
-              navigate('/');
-            } else {
-              throw new Error('No access token received');
+              // First check if the endpoint exists
+              try {
+                await fetch(`${apiBaseUrl}/api/auth/google/`, { method: 'HEAD' });
+                console.log("Google auth endpoint exists");
+              } catch (headError) {
+                console.error("Google auth endpoint check failed:", headError);
+              }
+              
+              const res = await fetch(`${apiBaseUrl}/api/auth/google/`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({ code: response.code }),
+                credentials: 'include'
+              });
+      
+              console.log("Google auth response status:", res.status);
+              console.log("Google auth response headers:", [...res.headers.entries()]);
+              
+              let data;
+              const contentType = res.headers.get('content-type');
+              
+              if (contentType && contentType.includes('application/json')) {
+                data = await res.json();
+                console.log("Google auth response data:", data);
+              } else {
+                const textResponse = await res.text();
+                console.error("Non-JSON response:", textResponse.substring(0, 100) + '...');
+                throw new Error('Server returned non-JSON response');
+              }
+              
+              if (!res.ok) {
+                throw new Error(data.error || data.details || 'Failed to authenticate with Google');
+              }
+
+              if (data.access) {
+                // Store tokens in localStorage and cookies
+                const success = storeTokens(data.access, data.refresh);
+                console.log("Google login token storage success:", success);
+                
+                navigate('/');
+              } else {
+                console.error("No access token in response:", data);
+                throw new Error('No access token received');
+              }
+            } catch (error) {
+              console.error('Error during Google sign in:', error);
+              setError(error.message || 'Failed to sign in with Google');
+              setIsLoading(false);
             }
-          } catch (error) {
-            console.error('Error during Google sign in:', error);
-            setError(error.message || 'Failed to sign in with Google');
-          } finally {
+          } else {
+            console.error('No authorization code received from Google');
+            setError('No authorization code received from Google');
             setIsLoading(false);
           }
+        },
+        error_callback: (error) => {
+          console.error('Google Sign-In error:', error);
+          setError('Google Sign-In failed: ' + (error.message || 'Unknown error'));
+          setIsLoading(false);
         }
-      },
-    });
-    
-    client.requestCode();
+      });
+      
+      client.requestCode();
+    } catch (initError) {
+      console.error('Error initializing Google Sign-In:', initError);
+      setError('Failed to initialize Google Sign-In');
+      setIsLoading(false);
+    }
   };
 
   return (
