@@ -35,7 +35,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # Enable this temporarily to debug production issues
 # DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', '.render.com', '.herokuapp.com', os.getenv('ALLOWED_HOST', '')]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://yt2notes-backend.onrender.com']
 
 # Frontend URL
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
