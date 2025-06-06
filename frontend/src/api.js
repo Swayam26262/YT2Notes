@@ -227,13 +227,8 @@ export const generateNotes = async (youtubeLink) => {
         console.log('Authentication token is present');
         console.log('API base URL:', api.defaults.baseURL);
         
-        // Using our getApiBaseUrl function to ensure consistent URL across the app
         const baseUrl = getApiBaseUrl();
         console.log('Using base URL:', baseUrl);
-        
-        // Create AbortController for timeout - increased to 10 minutes
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minutes
         
         try {
             const response = await fetch(`${baseUrl}/api/notes/generate/`, {
@@ -242,11 +237,8 @@ export const generateNotes = async (youtubeLink) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ link: youtubeLink }),
-                signal: controller.signal
+                body: JSON.stringify({ link: youtubeLink })
             });
-            
-            clearTimeout(timeoutId); // Clear timeout if request completes
             
             console.log('Response status:', response.status);
             
@@ -267,9 +259,6 @@ export const generateNotes = async (youtubeLink) => {
                 }
             }
         } catch (fetchErr) {
-            if (fetchErr.name === 'AbortError') {
-                throw new Error('Request timed out after 10 minutes. This could be because:\n1. The video is too long (try a shorter video)\n2. The server is busy (try again in a few minutes)\n3. There might be network issues (check your connection)');
-            }
             throw fetchErr;
         }
     } catch (error) {

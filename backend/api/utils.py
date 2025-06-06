@@ -72,6 +72,7 @@ def custom_exception_handler(exc, context):
 
 def yt_title(link):
     """Fetch the YouTube video title."""
+    cookie_file_path = os.path.join(settings.BASE_DIR, 'api', 'cookies.txt')
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
@@ -84,6 +85,11 @@ def yt_title(link):
             'Sec-Fetch-Mode': 'navigate',
         }
     }
+    if os.path.exists(cookie_file_path):
+        ydl_opts['cookiefile'] = cookie_file_path
+    else:
+        print(f"WARNING: Cookie file not found at {cookie_file_path}. Proceeding without cookies.")
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             # Extract video information
@@ -94,63 +100,56 @@ def yt_title(link):
             raise
 
 def download_audio(link):
-    """Download audio from YouTube video link."""
-    try:
-        # Set temporary directory based on debug mode
-        temp_dir = '/tmp' if not settings.DEBUG else settings.MEDIA_ROOT
-        os.makedirs(temp_dir, exist_ok=True)
+    import yt_dlp, os
+    from django.conf import settings
+    import cloudinary.uploader
 
+    cookie_file_path = os.path.join(settings.BASE_DIR, 'api', 'cookies.txt')
+    temp_dir = '/tmp' if not settings.DEBUG else settings.MEDIA_ROOT
+    os.makedirs(temp_dir, exist_ok=True)
+
+    try:
         ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
+            'format': 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio/best',
             'outtmpl': os.path.join(temp_dir, '%(id)s.%(ext)s'),
             'quiet': True,
             'no_warnings': True,
-            'no_color': True,
-            'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-us,en;q=0.5',
-                'Sec-Fetch-Mode': 'navigate',
-            }
+            'extract_flat': True,
         }
 
+        if os.path.exists(cookie_file_path):
+            ydl_opts['cookiefile'] = cookie_file_path
+
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            print("Starting download...")
-            info = ydl.extract_info(link, download=True)
-            
-            # Check video duration
-            duration = info.get('duration', 0)
-            if duration > 3600:  # More than 1 hour
-                raise Exception("Video too long. Please use a video under 1 hour in length.")
-            
-            temp_file_path = os.path.join(temp_dir, f"{info['id']}.mp3")
-            
-            if not os.path.exists(temp_file_path):
-                raise Exception(f"Audio file not found at {temp_file_path}")
-            
-            print(f"Audio file downloaded successfully: {temp_file_path}")
-            print(f"File size: {os.path.getsize(temp_file_path) / (1024*1024):.2f} MB")
-            
-            # Upload to Cloudinary
+            print("Fetching info...")
+            info = ydl.extract_info(link, download=False)
+
+            if info.get('duration', 0) > 3600:
+                raise Exception("Video too long")
+
+            print("Downloading audio...")
+            ydl.download([link])
+
+            audio_ext = info['ext'] if 'ext' in info else 'm4a'
+            file_path = os.path.join(temp_dir, f"{info['id']}.{audio_ext}")
+
+            if not os.path.exists(file_path):
+                raise Exception("Download failed")
+
             print("Uploading to Cloudinary...")
             result = cloudinary.uploader.upload(
-                temp_file_path, 
+                file_path,
                 resource_type="auto",
                 folder="youtube_audio"
             )
-            
-            # Clean up the temporary file
-            os.remove(temp_file_path)
-            print("Temporary file cleaned up")
-            
-            # Return the Cloudinary URL
+
+            try:
+                os.remove(file_path)
+            except Exception as cleanup_err:
+                print(f"Cleanup failed: {cleanup_err}")
+
             return result['url']
-            
+
     except Exception as e:
         print(f"Error in download_audio: {str(e)}")
         raise
@@ -179,16 +178,16 @@ def generate_notes_from_transcript(transcript, title):
         # Create prompt for Gemini
         prompt = f"""You are an expert note-taker. Create comprehensive, organized notes from the following transcript of a YouTube video titled: "{title}".
         
-The notes should:
-1. Have a clear, hierarchical structure with headings and subheadings
-2. Include key concepts, ideas, and important information
-3. Be organized in a logical manner that makes the content easy to understand and review
-4. Use bullet points for detailed information under each section
-5. Be written in a clear, concise academic style
+        The notes should:
+        1. Have a clear, hierarchical structure with headings and subheadings
+        2. Include key concepts, ideas, and important information
+        3. Be organized in a logical manner that makes the content easy to understand and review
+        4. Use bullet points for detailed information under each section
+        5. Be written in a clear, concise academic style
 
-Transcript:
-{transcript}
-"""
+    Transcript:
+    {transcript}
+    """
         
         # Try with different Gemini models
         try:

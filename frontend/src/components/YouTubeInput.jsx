@@ -115,7 +115,7 @@ const YouTubeInput = ({ onNotesGenerated, onError }) => {
         {isSubmitting && (
           <div className="mt-4 text-center">
             <p className="text-gray-600 mb-2">{progress}</p>
-            <p className="text-gray-600 mb-3">This may take several minutes depending on the video length.</p>
+            <p className="text-gray-600 mb-3">For longer videos (over 30 minutes), this process may take several minutes. Please be patient.</p>
             <div className="mt-3 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
           </div>
         )}

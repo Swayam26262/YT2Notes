@@ -49,61 +49,40 @@ const Home = () => {
     try {
       // Get the base URL from environment variables
       const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      console.log(`Using API at: ${baseUrl}`);
       
-      // Make the actual API request with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 1 minute timeout
+      const response = await fetch(`${baseUrl}/api/notes/generate/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ link: url })
+      });
       
-      console.log('Sending request to:', `${baseUrl}/api/notes/generate/`);
-      console.log('With payload:', { link: url });
+      if (!response.ok) {
+        let errorMessage = `Error: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          console.log('Error response data:', errorData);
+          errorMessage += ` - ${JSON.stringify(errorData)}`;
+        } catch (e) {
+          // If not JSON
+          const errorText = await response.text().catch(() => 'Unknown error');
+          console.log('Error response text:', errorText);
+          errorMessage += ` - ${errorText}`;
+        }
+        throw new Error(errorMessage);
+      }
       
-      try {
-        const response = await fetch(`${baseUrl}/api/notes/generate/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ link: url }),
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries([...response.headers]));
-        
-        if (!response.ok) {
-          let errorMessage = `Error: ${response.status}`;
-          try {
-            const errorData = await response.json();
-            console.log('Error response data:', errorData);
-            errorMessage += ` - ${JSON.stringify(errorData)}`;
-          } catch (e) {
-            // If not JSON
-            const errorText = await response.text().catch(() => 'Unknown error');
-            console.log('Error response text:', errorText);
-            errorMessage += ` - ${errorText}`;
-          }
-          throw new Error(errorMessage);
-        }
-        
-        const result = await response.json();
-        console.log('Success! Notes generated:', result);
-        
-        // After success, refresh notes and navigate to the note detail
-        if (result.id) {
-          navigate(`/notes/${result.id}`);
-        } else {
-          // If for some reason no ID is returned, just reload the current page
-          window.location.reload();
-        }
-      } catch (fetchError) {
-        if (fetchError.name === 'AbortError') {
-          throw new Error('Request timed out after 60 seconds. The server might be busy or down.');
-        }
-        throw fetchError;
+      const result = await response.json();
+      console.log('Success! Notes generated:', result);
+      
+      // After success, refresh notes and navigate to the note detail
+      if (result.id) {
+        navigate(`/notes/${result.id}`);
+      } else {
+        // If for some reason no ID is returned, just reload the current page
+        window.location.reload();
       }
     } catch (err) {
       console.error('Error generating notes:', err);
