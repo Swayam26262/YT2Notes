@@ -83,21 +83,33 @@ def yt_title(link):
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-us,en;q=0.5',
             'Sec-Fetch-Mode': 'navigate',
+            'Referer': 'https://www.youtube.com/',
+            'Origin': 'https://www.youtube.com',
+            'X-Forwarded-For': '203.0.113.1'  # Helps avoid IP-based blocks
+        },
+        'cookiefile': cookie_file_path if os.path.exists(cookie_file_path) else None,
+        'extractor_args': {
+            'youtube': {
+                'skip': ['dash', 'hls'],
+                'player_client': ['web']
+            }
         }
     }
-    if os.path.exists(cookie_file_path):
-        ydl_opts['cookiefile'] = cookie_file_path
-    else:
-        print(f"WARNING: Cookie file not found at {cookie_file_path}. Proceeding without cookies.")
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
-            # Extract video information
             info = ydl.extract_info(link, download=False)
+            if not info:
+                raise Exception("No video information returned")
             return info.get('title')
         except Exception as e:
-            print(f"Error in yt_title: {str(e)}")
-            raise
+            error_msg = f"Error fetching YouTube video: {str(e)}"
+            if "Video unavailable" in str(e):
+                error_msg += "\nThe video may be private, deleted, or age-restricted."
+            elif "HTTP Error 429" in str(e):
+                error_msg += "\nYouTube is rate-limiting our requests. Try again later or add YouTube cookies."
+            print(error_msg)
+            raise Exception(error_msg)
 
 def download_audio(link):
     import yt_dlp, os
