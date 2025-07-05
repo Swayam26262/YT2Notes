@@ -6,29 +6,15 @@
 
 <p align="center"><img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&amp;logo=django&amp;logoColor=white" alt="shields"><img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&amp;logo=react&amp;logoColor=black" alt="shields"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&amp;logo=tailwind-css&amp;logoColor=white" alt="shields"><img src="https://img.shields.io/badge/Google_OAuth-4285F4?style=for-the-badge&amp;logo=google&amp;logoColor=white" alt="shields"></p>
 
-<h2>Project Screenshots:</h2>
+<h2>Project Preview:</h2>
 
 <div style="margin-bottom: 20px;">
-<img src="https://media-hosting.imagekit.io/08d0ad8ae3d3409b/screenshot_1746709684625.png?Expires=1841317686&amp;Key-Pair-Id=K2ZIVPTIP2VGHC&amp;Signature=zxRp4ufCkZQpy26N8OAklggWMGSH3R5I7Fplm0R4QclCmZD-6o~TejiLMeP~zkW~HTrFxB~rgf20y0WB~NpB74XbAWYYS318I7Jb8AMbZXxKSdeww72u44qgMwmQ5c8DLvaXYOMJcwV~mxruETBL3HIqkq7FpV7PCBvy0fyDcX6T87FrfKYeMFI183hCDgdC5RtfE3FczfrFjrrRCFAQFqBZfeD4Yc5STMterBqdoC36X94w3lAckfIPbGqNq9PFYhVTgaljdRj7EhJJ~JiKEQKwcTDP4YBVgSNHKRpVjkY5H3wSx3a10LFUy5y~UTwzpuyiGkkQJE93CRHEh82UHA__" alt="project-screenshot" width="100%" height="auto">
+<img src="https://ik.imagekit.io/clttjxlvp/ytnotes.png?updatedAt=1751295756952" alt="project-screenshot" width="100%" height="auto">
 </div>
 
 <hr style="margin: 30px 0; border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
 
-<div style="margin-bottom: 20px;">
-<img src="https://media-hosting.imagekit.io/866c176bf13947d3/screenshot_1746709802308.png?Expires=1841317803&amp;Key-Pair-Id=K2ZIVPTIP2VGHC&amp;Signature=xcP9wZt816S~h9g3u~QG3a-7sX0lic5z2mvteMFfWdEpgEBOfhiq2EIdMe3213DEHCPcGhwFCjZ1AdBYnlgNcGpFkH9HUhJmatRbn7rVPTSE-dPAuPQr4DWvlmfUtFPHeE-EfAUt5V-NcTIYHXCszbmk~Kh2b2fhev2L12Hqx55H~L0ZfiBGZbmeBixqT8c978Q0yOhnTpcs7g1fWwiG0R9smjE7ucedD1UQ03IyUhgBFA9pR8kc3TT~1qU1c8qiAE-vIsPq2SMh2mPiSnLRTS8bZc58lWZ3OomiZqsqP~l~TF852UXaoxYCa9FMuw~W9BAt2spYEZghYY6kkUassw__" alt="project-screenshot" width="100%" height="auto">
-</div>
 
-<hr style="margin: 30px 0; border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
-
-<div style="margin-bottom: 20px;">
-<img src="https://media-hosting.imagekit.io/dc3f70a1bf7e4c26/screenshot_1746709856320.png?Expires=1841317859&amp;Key-Pair-Id=K2ZIVPTIP2VGHC&amp;Signature=ktIERfo3LPGCPk1y8LuGL9E6rIhiVGiGPzCuT4D0Bf17R14rKpG4axufZ0zQSXpDzd-rGHjk0FDxES0NhpqX0n9I-xVPastIx9PVpk54OhG83prxhcE0me8paVcp2c7oa5rm1dH~oKwVKdetFa9UwPT6zCDhs5t7gnlj~-VDoQo5CqIaC5J~X~lbXztKC3dpYOriXIqLWfbSvUHdgDYWOgXu9OaMWhLDuuRWa-zFxOmcSi96gsZzmXRgMcAhwJrgsJxbFB426oB1QbUtTCxkWlI1gM3JU11svkYN1We7oN69rHfuQQ7kdvkkdSat2pD8C83lYwffdGtBCPpanUbT6Q__" alt="project-screenshot" width="100%" height="auto">
-</div>
-
-<hr style="margin: 30px 0; border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
-
-<div style="margin-bottom: 20px;">
-<img src="https://media-hosting.imagekit.io/fbb9b8536f6e4395/screenshot_1746709868848.png?Expires=1841317870&amp;Key-Pair-Id=K2ZIVPTIP2VGHC&amp;Signature=TWo0hN8mJwLhL6QJT5nsHClcZsHBzqqOgYQjIV0ivksGwvctxuP4PmgBUbxuXPxm18j0xmwgbh-vgmhh5QdZk40ZjOn0KTdWQpucoWYjMh~VFhGjEAV0AnPbNdle5Fx~oxAdoyD3Y05JTXdyNz9SxfOBo3OJCCqTYWqm95d1pmeiCJvWYMnmmeIn~J2-OLMRMGOB~Md-d2HaetZjvZ4l-Zmtj7OOSg8IXlw-qVDcmzM1G50mP8t20NYy3MtEXUJWeCtq758ZgKr0XHtUZJ88dWhWhSLfYAwGydd~6ekdsDtcY7SUpFa8Mc8rxRQprWgUa8UKmj6QYbZe~xl5ImZqTg__" alt="project-screenshot" width="100%" height="auto">
-</div>
 
 ## ✨ Features
 
